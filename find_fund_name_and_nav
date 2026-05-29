@@ -1,0 +1,55 @@
+from selenium import webdriver
+from selenium.webdriver.firefox.service import Service
+from selenium.webdriver import Firefox
+from selenium.webdriver.support.ui import Select
+from time import sleep
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
+import pandas as pd
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.common.by import By
+
+# K Asset Morning Star
+url = 'https://www.kasikornasset.com/kasset/th/mutual-fund/nav/pages/index.aspx?quickSearch=Morningstar'
+o = Options()
+o.binary_location = r'C:\Program Files\Mozilla Firefox\firefox.exe'
+s = Service(executable_path = r"C:\Users\User\geckodriver.exe")
+browser = Firefox(service=s,options = o)
+browser.get(url)
+sleep(2)
+
+# Close Cookie
+Submit_warning = browser.find_element(By.ID,"SubmitWarningTH")
+browser.execute_script("arguments[0].click();", Submit_warning)
+
+# Find Fund_content_Container
+dict_page ={}
+fund_list = []
+# Find content container
+fund_content_containers = browser.find_elements(By.CSS_SELECTOR,"div.fund-content__container:not([style*='display: none'])")
+
+for fund_content_container in fund_content_containers:
+    # Name of the fund Type
+    fund_type = fund_content_container.find_element(By.CSS_SELECTOR,"h3.h4").text
+    # finding max page for repeat swipe up as max_page times
+    Max_page_container = fund_content_container.find_elements(By.CSS_SELECTOR,"div.ka-pagination__bullet")[-1]
+    # Add to keys and values
+    dict_page[fund_type] = int(Max_page_container.text)
+    
+    for _ in range(sum(dict_page.values())):
+        # Keep the fund name and NAV
+        trs = fund_content_container.find_elements(By.XPATH, "//tr[@data-generate-table-container]")
+        for tr in trs:
+            name = tr.find_element(By.CSS_SELECTOR, "a.table-blocking__body__heading__head__conteiner.kax-tracking-link")
+            # print(name.get_attribute("title"))
+            fundname = name.get_attribute("title")
+            nav = tr.find_element(By.CSS_SELECTOR, "td[data-generate-table-text='netvalue']")
+            # print(nav.text)
+            fundnav = nav.text
+            #Adding the fund set without duplicated
+            fund_list.append([fundname,fundnav])
+        # execute next page till it's ending
+        next_page = fund_content_container.find_element(By.CSS_SELECTOR,"div.swiper-pagination-next.btn-pagination-number")
+        browser.execute_script("arguments[0].click();", next_page)
+df = pd.DataFrame(fund_list,columns =["fund_name","fund_nav"]).drop_duplicates()
+print(df)        
