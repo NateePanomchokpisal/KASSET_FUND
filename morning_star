@@ -1,0 +1,24 @@
+# K Asset Morning Star
+funds = df["fund_name"][[0]]
+
+for fund in funds:
+    fund_url = f'https://www.kasikornasset.com/kasset/th/mutual-fund/fund-template/Pages/{fund}.aspx'
+    browser.get(fund_url)
+    sleep(1)
+    # Close Cookie
+    Submit_warning = browser.find_element(By.ID,"SubmitWarningTH")
+    browser.execute_script("arguments[0].click();", Submit_warning)
+    # Find the informations
+    # Clicking information tab
+    information_click = browser.find_element(By.CSS_SELECTOR,"a[aria-controls='information']")
+    browser.execute_script("arguments[0].click();", information_click)
+    # Expanding fund detail
+    expanded_fund_detial = browser.find_element(By.CSS_SELECTOR,"button[aria-controls='panelsStayOpen-collapseThree']")
+    browser.execute_script("arguments[0].click();", expanded_fund_detial)
+    # type of fund
+    fund_type = browser.find_element(By.CSS_SELECTOR,"ul.list-bullet").text.split("\n")
+    fund_typeTH = fund_type[0]
+    fund_typeEN = fund_type[1]
+    # Detail of the fund
+    
+    
