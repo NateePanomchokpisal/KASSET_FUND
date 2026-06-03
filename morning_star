@@ -5,6 +5,8 @@ df1 = df.copy()
 funds = df1["fund_name"]
 asset_dict ={}
 asset_val_dict = {}
+fund_type_th = []
+fund_type_en = []
 for fund in funds:
     fund_url = f'https://www.kasikornasset.com/kasset/th/mutual-fund/fund-template/Pages/{fund}.aspx'
     browser.get(fund_url)
@@ -22,8 +24,8 @@ for fund in funds:
     sleep(1)
     # type of fund
     fund_type = browser.find_element(By.CSS_SELECTOR,"ul.list-bullet").text.split("\n")
-    df1["fund_typeTH"] = fund_type[0]
-    df1["fund_typeEN"] = fund_type[1]
+    fund_type_th.append(fund_type[0])
+    fund_type_en.append(fund_type[1])
     # Detail of the fund
     # the top five assets 
     top_five_asset = browser.find_element(By.CSS_SELECTOR,"ul.list-unstyled.d-grid.gap-2")
@@ -37,7 +39,14 @@ for fund in funds:
     # adding to the empty dict
     asset_dict[fund] = asset_list
     asset_val_dict[fund] = asset_val_list
-# Adjusting with the max of lenght for avoiding the unmatching same length
+    
+# Closing Browser
+browser.close()
+    
+# Adding funding type (both TH and EN)
+df1["fund_typeTH"] = fund_type_th.copy()
+df1["fund_typeEN"] = fund_type_en.copy()
+# Adjusting with the max of lenght for avoiding the un-matching same length
 asset_df = pd.DataFrame(data = padding_none(*asset_dict.values()),index = asset_dict.keys(),columns = ["asset1","asset2","asset3","asset4","asset5"])
 asset_val_df = pd.DataFrame(data = padding_none(*asset_val_dict.values()),index = asset_val_dict.keys(), columns = ["val1",'val2',"val3",'val4',"val5"])
 # Joinning the data together
