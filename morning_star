@@ -42,3 +42,10 @@ asset_df = pd.DataFrame(data = padding_none(*asset_dict.values()),index = asset_
 asset_val_df = pd.DataFrame(data = padding_none(*asset_val_dict.values()),index = asset_val_dict.keys(), columns = ["val1",'val2',"val3",'val4',"val5"])
 # Joinning the data together
 asset_df1 = asset_df.join(asset_val_df)
+
+#Setting the index as Funding name for joinning together
+df1.set_index("fund_name",inplace=True)
+
+df2 = df1.join(asset_df1)
+columns = ["fund_nav","fund_typeTH","fund_typeEN","asset1","val1","asset2","val2","asset3","val3","asset4","val4","asset5","val5"]
+df2.loc[:,columns]
