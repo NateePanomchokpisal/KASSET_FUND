@@ -1,0 +1,24 @@
+from openpyxl import load_workbook
+
+# Export to excel
+file_name = 'C:\\Users\\User\\DELL\\Pop_learnning\\SEC\\output_morning_star_KASSET.xlsx'
+df2.to_excel(file_name, index=True)
+# with pd.ExcelWriter(file_name, engine='openpyxl', engine_kwargs={'options': {'encoding': 'utf-8-sig'}}) as writer:
+#     df.to_excel(writer, index=True)
+
+# Auto-adjust column widths using openpyxl
+wb = load_workbook(file_name)
+ws = wb.active
+
+for col in ws.columns:
+    max_len = 0
+    col_letter = col[0].column_letter # Get the column letter (A, B, C...)
+    
+    for cell in col:
+        if cell.value:
+            max_len = max(max_len, len(str(cell.value)))
+            
+    # Set the column width with a little padding (e.g., +2 or +3)
+    ws.column_dimensions[col_letter].width = max(max_len + 3, 10)
+
+wb.save(file_name)
