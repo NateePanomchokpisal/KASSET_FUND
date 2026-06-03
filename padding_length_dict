@@ -1,0 +1,9 @@
+# Padding lenght of dict to the max of lenght
+def padding_none(*args):
+    max_len = max(len(v) for v in args)
+    # padding with none values
+    padded_data = [
+        v + [None]*(max_len - len(v))
+        for v in args
+    ]
+    return padded_data
